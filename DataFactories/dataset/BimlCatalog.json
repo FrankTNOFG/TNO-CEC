@@ -1,0 +1,15 @@
+{
+  "name": "BimlCatalog",
+  "properties": {
+    "linkedServiceName": {
+      "referenceName": "BimlCatalog",
+      "type": "LinkedServiceReference"
+    },
+    "schema": [],
+    "type": "AzureSqlTable",
+    "typeProperties": {
+      "schema": "bfx",
+      "table": "Execution"
+    }
+  }
+}

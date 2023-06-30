@@ -1,0 +1,660 @@
+{
+  "name": "COPY_DbrAwltSrc_ProductCategory",
+  "properties": {
+    "activities": [
+      {
+        "name": "LogExecutionStart",
+        "policy": {
+          "retry": 0,
+          "timeout": "0.12:00:00"
+        },
+        "type": "Lookup",
+        "typeProperties": {
+          "dataset": {
+            "referenceName": "BimlCatalog",
+            "type": "DatasetReference"
+          },
+          "source": {
+            "sqlReaderStoredProcedureName": "[adf].[LogExecutionStart]",
+            "storedProcedureParameters": {
+              "ExternalExecutionID": {
+                "type": "String",
+                "value": {
+                  "type": "Expression",
+                  "value": "@pipeline().RunId"
+                }
+              },
+              "IsBatch": {
+                "type": "Boolean",
+                "value": "false"
+              },
+              "PackageName": {
+                "type": "String",
+                "value": "COPY_DbrAwltSrc_ProductCategory"
+              },
+              "ParentExecutionID": {
+                "type": "Int64",
+                "value": {
+                  "type": "Expression",
+                  "value": "@pipeline().parameters.BatchExecutionID"
+                }
+              },
+              "ProjectName": {
+                "type": "String",
+                "value": "DBR_AWLT_SRC"
+              }
+            },
+            "type": "SqlSource"
+          }
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "LogExecutionStart",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "name": "MainActivity",
+        "type": "IfCondition",
+        "typeProperties": {
+          "expression": {
+            "type": "Expression",
+            "value": "@or(equals(activity('LogExecutionStart').output.firstRow.ExecutionStatus, null), equals(activity('LogExecutionStart').output.firstRow.ExecutionStatus, 'E'))"
+          },
+          "ifTrueActivities": [
+            {
+              "inputs": [
+                {
+                  "parameters": {
+                    "TargetObjectName": {
+                      "type": "Expression",
+                      "value": "@pipeline().parameters.TargetObjectName"
+                    },
+                    "TargetSchemaName": {
+                      "type": "Expression",
+                      "value": "@pipeline().parameters.TargetSchemaName"
+                    }
+                  },
+                  "referenceName": "SQLDB_AWLT_SRC",
+                  "type": "DatasetReference"
+                }
+              ],
+              "name": "COPY_AWLT_02_Sales_01_ProductCategory",
+              "outputs": [
+                {
+                  "parameters": {
+                    "BatchStartTime": {
+                      "type": "Expression",
+                      "value": "@pipeline().parameters.BatchStartTime"
+                    },
+                    "DatasetContainer": "bfx-plnd",
+                    "DatasetFile": {
+                      "type": "Expression",
+                      "value": "@concat('AdventureWorksLT2012_SalesLT_ProductCategory', '_', replace(replace(replace(pipeline().parameters.BatchStartTime,':',''),'-',''),'.',''), '.parquet')"
+                    },
+                    "DatasetFolder": "AdventureWorksLT2012_SalesLT_ProductCategory"
+                  },
+                  "referenceName": "AZDLS_BFX_LND_AZDLS",
+                  "type": "DatasetReference"
+                }
+              ],
+              "policy": {
+                "retry": 0,
+                "timeout": "0.12:00:00"
+              },
+              "type": "Copy",
+              "typeProperties": {
+                "sink": {
+                  "formatSettings": {
+                    "type": "ParquetWriteSettings"
+                  },
+                  "storeSettings": {
+                    "copyBehavior": "PreserveHierarchy",
+                    "type": "AzureBlobFSWriteSettings"
+                  },
+                  "type": "ParquetSink"
+                },
+                "source": {
+                  "sqlReaderQuery": "SELECT [ProductCategoryID]\n\t\t,[ParentProductCategoryID]\n\t\t,[Name]\n\t\t,[rowguid]\n\t\t,CONVERT(VARCHAR(23), [ModifiedDate], 121) AS [ModifiedDate]\n\t\t,'@{formatDateTime(pipeline().parameters.BatchStartTime, 'yyyy-MM-dd HH:mm:ss.fffffff')}' AS [FlexRowEffectiveFromDate]\n\t\t,'@{activity('LogExecutionStart').output.firstRow.ExecutionID}' AS [FlexRowAuditId]\n\t\t,'@{string('I')}' AS [FlexRowChangeType]\n\t\t,'awlt' AS [FlexRowRecordSource]\nFROM\t[SalesLT].[ProductCategory] ",
+                  "type": "SqlSource"
+                },
+                "translator": {
+                  "mappings": [
+                    {
+                      "sink": {
+                        "name": "ProductCategoryID",
+                        "type": "Int32"
+                      },
+                      "source": {
+                        "name": "ProductCategoryID",
+                        "type": "Int32"
+                      }
+                    },
+                    {
+                      "sink": {
+                        "name": "ParentProductCategoryID",
+                        "type": "Int32"
+                      },
+                      "source": {
+                        "name": "ParentProductCategoryID",
+                        "type": "Int32"
+                      }
+                    },
+                    {
+                      "sink": {
+                        "name": "Name",
+                        "type": "String"
+                      },
+                      "source": {
+                        "name": "Name",
+                        "type": "String"
+                      }
+                    },
+                    {
+                      "sink": {
+                        "name": "rowguid",
+                        "type": "Guid"
+                      },
+                      "source": {
+                        "name": "rowguid",
+                        "type": "Guid"
+                      }
+                    },
+                    {
+                      "sink": {
+                        "name": "ModifiedDate",
+                        "type": "Datetime"
+                      },
+                      "source": {
+                        "name": "ModifiedDate",
+                        "type": "Datetime"
+                      }
+                    },
+                    {
+                      "sink": {
+                        "name": "FlexRowEffectiveFromDate"
+                      },
+                      "source": {
+                        "name": "FlexRowEffectiveFromDate"
+                      }
+                    },
+                    {
+                      "sink": {
+                        "name": "FlexRowAuditId"
+                      },
+                      "source": {
+                        "name": "FlexRowAuditId"
+                      }
+                    },
+                    {
+                      "sink": {
+                        "name": "FlexRowChangeType"
+                      },
+                      "source": {
+                        "name": "FlexRowChangeType"
+                      }
+                    },
+                    {
+                      "sink": {
+                        "name": "FlexRowRecordSource"
+                      },
+                      "source": {
+                        "name": "FlexRowRecordSource"
+                      }
+                    }
+                  ],
+                  "type": "TabularTranslator"
+                }
+              }
+            },
+            {
+              "dependsOn": [
+                {
+                  "activity": "COPY_AWLT_02_Sales_01_ProductCategory",
+                  "dependencyConditions": [
+                    "Succeeded"
+                  ]
+                }
+              ],
+              "linkedServiceName": {
+                "referenceName": "BimlCatalog",
+                "type": "LinkedServiceReference"
+              },
+              "name": "LogRowcount",
+              "policy": {
+                "retry": 0,
+                "timeout": "0.12:00:00"
+              },
+              "type": "SqlServerStoredProcedure",
+              "typeProperties": {
+                "storedProcedureName": "[adf].[LogRowCount]",
+                "storedProcedureParameters": {
+                  "ComponentName": {
+                    "type": "String",
+                    "value": "COPY_AWLT_02_Sales_01_ProductCategory"
+                  },
+                  "CountType": {
+                    "type": "String",
+                    "value": "Copy"
+                  },
+                  "ExecutionID": {
+                    "type": "Int64",
+                    "value": {
+                      "type": "Expression",
+                      "value": "@{activity('LogExecutionStart').output.firstRow.ExecutionID}"
+                    }
+                  },
+                  "ObjectName": {
+                    "type": "String",
+                    "value": "AWLT_SRC.SalesLT.ProductCategory"
+                  },
+                  "RowCount": {
+                    "type": "String",
+                    "value": {
+                      "type": "Expression",
+                      "value": "@activity('COPY_AWLT_02_Sales_01_ProductCategory').output.rowsCopied"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "dependsOn": [
+                {
+                  "activity": "COPY_AWLT_02_Sales_01_ProductCategory",
+                  "dependencyConditions": [
+                    "Succeeded"
+                  ]
+                }
+              ],
+              "name": "SetHasRowsCopied",
+              "type": "SetVariable",
+              "typeProperties": {
+                "value": {
+                  "type": "Expression",
+                  "value": "@greater(if(contains(activity('COPY_AWLT_02_Sales_01_ProductCategory').output,'rowsCopied'), activity('COPY_AWLT_02_Sales_01_ProductCategory').output.rowsCopied, 0), 0)"
+                },
+                "variableName": "HasRowsCopied"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "MainActivity",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ],
+        "linkedServiceName": {
+          "referenceName": "BimlCatalog",
+          "type": "LinkedServiceReference"
+        },
+        "name": "ERR_MainActivity",
+        "policy": {
+          "retry": 0,
+          "timeout": "0.12:00:00"
+        },
+        "type": "SqlServerStoredProcedure",
+        "typeProperties": {
+          "storedProcedureName": "[adf].[LogExecutionError]",
+          "storedProcedureParameters": {
+            "ErrorDescription": {
+              "type": "String",
+              "value": {
+                "type": "Expression",
+                "value": "@string(activity('MainActivity').Error)"
+              }
+            },
+            "ExecutionID": {
+              "type": "Int64",
+              "value": {
+                "type": "Expression",
+                "value": "@{activity('LogExecutionStart').output.firstRow.ExecutionID}"
+              }
+            },
+            "IsBatch": {
+              "type": "Boolean",
+              "value": "false"
+            },
+            "Raiserror": {
+              "type": "Boolean",
+              "value": "true"
+            }
+          }
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "MainActivity",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "name": "MainProcess",
+        "type": "IfCondition",
+        "typeProperties": {
+          "expression": {
+            "type": "Expression",
+            "value": "@variables('HasRowsCopied')"
+          },
+          "ifTrueActivities": [
+            {
+              "linkedServiceName": {
+                "referenceName": "BFX_DBR",
+                "type": "LinkedServiceReference"
+              },
+              "name": "ProcessSourceToStageNotebook",
+              "policy": {
+                "retry": 0,
+                "timeout": "0.12:00:00"
+              },
+              "type": "DatabricksNotebook",
+              "typeProperties": {
+                "baseParameters": {
+                  "_bfx_ods": "bfx-ods",
+                  "_bfx_stg": "bfx-stg",
+                  "location_path": "abfss://bfx-plnd@lakehouse.dfs.core.windows.net",
+                  "row_audit_id": {
+                    "type": "Expression",
+                    "value": "@string(activity('LogExecutionStart').output.firstRow.ExecutionID)"
+                  }
+                },
+                "notebookPath": {
+                  "type": "Expression",
+                  "value": "@concat(pipeline().parameters.NotebookRuntimePath, 'DBR_AWLT_SRC/bfx_awlt_ProductCategory_00_Main')"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "MainProcess",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ],
+        "linkedServiceName": {
+          "referenceName": "BimlCatalog",
+          "type": "LinkedServiceReference"
+        },
+        "name": "ERR_MainProcess",
+        "policy": {
+          "retry": 0,
+          "timeout": "0.12:00:00"
+        },
+        "type": "SqlServerStoredProcedure",
+        "typeProperties": {
+          "storedProcedureName": "[adf].[LogExecutionError]",
+          "storedProcedureParameters": {
+            "ErrorDescription": {
+              "type": "String",
+              "value": {
+                "type": "Expression",
+                "value": "@string(activity('MainProcess').Error)"
+              }
+            },
+            "ExecutionID": {
+              "type": "Int64",
+              "value": {
+                "type": "Expression",
+                "value": "@{activity('LogExecutionStart').output.firstRow.ExecutionID}"
+              }
+            },
+            "IsBatch": {
+              "type": "Boolean",
+              "value": "false"
+            },
+            "Raiserror": {
+              "type": "Boolean",
+              "value": "true"
+            }
+          }
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "MainProcess",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "linkedServiceName": {
+          "referenceName": "BimlCatalog",
+          "type": "LinkedServiceReference"
+        },
+        "name": "LogExecutionEnd",
+        "policy": {
+          "retry": 0,
+          "timeout": "0.12:00:00"
+        },
+        "type": "SqlServerStoredProcedure",
+        "typeProperties": {
+          "storedProcedureName": "[adf].[LogExecutionEnd]",
+          "storedProcedureParameters": {
+            "ExecutionID": {
+              "type": "Int64",
+              "value": {
+                "type": "Expression",
+                "value": "@{activity('LogExecutionStart').output.firstRow.ExecutionID}"
+              }
+            },
+            "IsBatch": {
+              "type": "Boolean",
+              "value": "false"
+            }
+          }
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "MainProcess",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "name": "GetArchiveFilesMetadata",
+        "policy": {
+          "retry": 0,
+          "timeout": "0.12:00:00"
+        },
+        "type": "GetMetadata",
+        "typeProperties": {
+          "dataset": {
+            "parameters": {
+              "DatasetContainer": "bfx-plnd",
+              "DatasetFile": {
+                "type": "Expression",
+                "value": "@string('')"
+              },
+              "DatasetFolder": "AdventureWorksLT2012_SalesLT_ProductCategory"
+            },
+            "referenceName": "AZDLS_BFX_LND_AZDLS",
+            "type": "DatasetReference"
+          },
+          "fieldList": [
+            "childItems",
+            "exists"
+          ],
+          "storeSettings": {
+            "enablePartitionRootDiscovery": "false",
+            "recursive": "false",
+            "type": "AzureBlobFSReadSettings"
+          }
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "GetArchiveFilesMetadata",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "name": "ForeachArchiveFile",
+        "type": "ForEach",
+        "typeProperties": {
+          "activities": [
+            {
+              "inputs": [
+                {
+                  "parameters": {
+                    "DatasetContainer": "bfx-plnd",
+                    "DatasetFile": {
+                      "type": "Expression",
+                      "value": "@item().Name"
+                    },
+                    "DatasetFolder": "AdventureWorksLT2012_SalesLT_ProductCategory"
+                  },
+                  "referenceName": "AZDLS_BFX_LND_AZDLS",
+                  "type": "DatasetReference"
+                }
+              ],
+              "name": "CopyFilesToArchive",
+              "outputs": [
+                {
+                  "parameters": {
+                    "DatasetContainer": "bfx-lnd",
+                    "DatasetFile": {
+                      "type": "Expression",
+                      "value": "@string('')"
+                    },
+                    "DatasetFolder": "AdventureWorksLT2012_SalesLT_ProductCategory"
+                  },
+                  "referenceName": "AZDLS_BFX_PLND_AZDLS",
+                  "type": "DatasetReference"
+                }
+              ],
+              "policy": {
+                "retry": 0,
+                "timeout": "0.12:00:00"
+              },
+              "type": "Copy",
+              "typeProperties": {
+                "sink": {
+                  "formatSettings": {
+                    "type": "ParquetWriteSettings"
+                  },
+                  "storeSettings": {
+                    "type": "AzureBlobFSWriteSettings"
+                  },
+                  "type": "ParquetSink"
+                },
+                "source": {
+                  "storeSettings": {
+                    "enablePartitionRootDiscovery": "false",
+                    "recursive": "false",
+                    "type": "AzureBlobFSReadSettings",
+                    "wildcardFileName": {
+                      "type": "Expression",
+                      "value": "@item().Name"
+                    },
+                    "wildcardFolderPath": "AdventureWorksLT2012_SalesLT_ProductCategory"
+                  },
+                  "type": "ParquetSource"
+                }
+              }
+            }
+          ],
+          "items": {
+            "type": "Expression",
+            "value": "@if(contains(activity('GetArchiveFilesMetadata').output,'childItems'), activity('GetArchiveFilesMetadata').output.childItems, variables('EmptyChildItemArray'))"
+          }
+        }
+      }
+    ],
+    "folder": {
+      "name": "DBR_AWLT_SRC/Copy"
+    },
+    "parameters": {
+      "AzureArchiveContainer": {
+        "defaultValue": "archive",
+        "type": "String"
+      },
+      "AzureErrorContainer": {
+        "defaultValue": "error",
+        "type": "String"
+      },
+      "AzureStageContainer": {
+        "defaultValue": "staging",
+        "type": "String"
+      },
+      "AzureStorageAccount": {
+        "defaultValue": "bimlflex",
+        "type": "String"
+      },
+      "AzureStorageSasToken": {
+        "type": "String"
+      },
+      "BatchExecutionID": {
+        "defaultValue": "-1",
+        "type": "String"
+      },
+      "BatchStartTime": {
+        "defaultValue": "1900-01-01",
+        "type": "String"
+      },
+      "IsInitialLoad": {
+        "defaultValue": "false",
+        "type": "Bool"
+      },
+      "NotebookRuntimePath": {
+        "defaultValue": "/Repos/BimlFlex/DEMO/Databricks/",
+        "type": "String"
+      },
+      "RecordSource": {
+        "defaultValue": "awlt",
+        "type": "String"
+      },
+      "SourceCatalogName": {
+        "defaultValue": "AdventureWorksLT2012",
+        "type": "String"
+      },
+      "SourceObjectName": {
+        "defaultValue": "ProductCategory",
+        "type": "String"
+      },
+      "SourceSchemaName": {
+        "defaultValue": "awlt",
+        "type": "String"
+      },
+      "SourceScopedName": {
+        "defaultValue": "AdventureWorksLT2012_SalesLT_ProductCategory",
+        "type": "String"
+      },
+      "TargetObjectName": {
+        "defaultValue": "ProductCategory",
+        "type": "String"
+      },
+      "TargetSchemaName": {
+        "defaultValue": "awlt",
+        "type": "String"
+      }
+    },
+    "variables": {
+      "EmptyChildItemArray": {
+        "type": "Array"
+      },
+      "HasRowsCopied": {
+        "type": "Boolean"
+      }
+    }
+  }
+}

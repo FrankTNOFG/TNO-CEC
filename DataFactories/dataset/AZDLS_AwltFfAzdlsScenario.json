@@ -1,0 +1,41 @@
+{
+  "name": "AZDLS_AwltFfAzdlsScenario",
+  "properties": {
+    "folder": {
+      "name": "SRC/AWLT_FF_AZDLS"
+    },
+    "linkedServiceName": {
+      "referenceName": "AWLT_FF_AZDLS",
+      "type": "LinkedServiceReference"
+    },
+    "schema": [
+      {
+        "name": "ScenarioKey",
+        "type": "Int32"
+      },
+      {
+        "name": "ScenarioName",
+        "type": "String"
+      },
+      {
+        "name": "ScenarioDate",
+        "type": "String"
+      },
+      {
+        "name": "ScenarioEmpty",
+        "type": "String"
+      }
+    ],
+    "type": "DelimitedText",
+    "typeProperties": {
+      "columnDelimiter": "|",
+      "encodingName": "WINDOWS-1252",
+      "firstRowAsHeader": true,
+      "location": {
+        "fileSystem": "source",
+        "folderPath": "Scenario",
+        "type": "AzureBlobFSLocation"
+      }
+    }
+  }
+}

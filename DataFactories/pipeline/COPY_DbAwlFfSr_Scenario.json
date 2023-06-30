@@ -1,0 +1,1202 @@
+{
+  "name": "COPY_DbAwlFfSr_Scenario",
+  "properties": {
+    "activities": [
+      {
+        "name": "LogExecutionStart",
+        "policy": {
+          "retry": 0,
+          "timeout": "0.12:00:00"
+        },
+        "type": "Lookup",
+        "typeProperties": {
+          "dataset": {
+            "referenceName": "BimlCatalog",
+            "type": "DatasetReference"
+          },
+          "source": {
+            "sqlReaderStoredProcedureName": "[adf].[LogExecutionStart]",
+            "storedProcedureParameters": {
+              "ExternalExecutionID": {
+                "type": "String",
+                "value": {
+                  "type": "Expression",
+                  "value": "@pipeline().RunId"
+                }
+              },
+              "IsBatch": {
+                "type": "Boolean",
+                "value": "false"
+              },
+              "PackageName": {
+                "type": "String",
+                "value": "COPY_DbAwlFfSr_Scenario"
+              },
+              "ParentExecutionID": {
+                "type": "Int64",
+                "value": {
+                  "type": "Expression",
+                  "value": "@pipeline().parameters.BatchExecutionID"
+                }
+              },
+              "ProjectName": {
+                "type": "String",
+                "value": "DBR_AWLT_FF_SRC"
+              }
+            },
+            "type": "SqlSource"
+          }
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "LogExecutionStart",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "name": "MainActivity",
+        "type": "IfCondition",
+        "typeProperties": {
+          "expression": {
+            "type": "Expression",
+            "value": "@or(equals(activity('LogExecutionStart').output.firstRow.ExecutionStatus, null), equals(activity('LogExecutionStart').output.firstRow.ExecutionStatus, 'E'))"
+          },
+          "ifTrueActivities": [
+            {
+              "inputs": [
+                {
+                  "parameters": {},
+                  "referenceName": "AZDLS_AwltFfAzdlsScenario",
+                  "type": "DatasetReference"
+                }
+              ],
+              "name": "COPY_AWLT_01_dbo_Scenario",
+              "outputs": [
+                {
+                  "parameters": {
+                    "BatchStartTime": {
+                      "type": "Expression",
+                      "value": "@pipeline().parameters.BatchStartTime"
+                    },
+                    "DatasetContainer": "bfx-plnd",
+                    "DatasetFile": {
+                      "type": "Expression",
+                      "value": "@concat('source_dbo_Scenario', '_', replace(replace(replace(pipeline().parameters.BatchStartTime,':',''),'-',''),'.',''), '.parquet')"
+                    },
+                    "DatasetFolder": "source_dbo_Scenario"
+                  },
+                  "referenceName": "AZDLS_BFX_LND_AZDLS",
+                  "type": "DatasetReference"
+                }
+              ],
+              "policy": {
+                "retry": 0,
+                "timeout": "0.12:00:00"
+              },
+              "type": "Copy",
+              "typeProperties": {
+                "sink": {
+                  "formatSettings": {
+                    "type": "ParquetWriteSettings"
+                  },
+                  "storeSettings": {
+                    "copyBehavior": "PreserveHierarchy",
+                    "type": "AzureBlobFSWriteSettings"
+                  },
+                  "type": "ParquetSink"
+                },
+                "source": {
+                  "additionalColumns": [
+                    {
+                      "name": "FlexRowEffectiveFromDate",
+                      "value": {
+                        "type": "Expression",
+                        "value": "@{formatDateTime(pipeline().parameters.BatchStartTime, 'yyyy-MM-dd HH:mm:ss.fffffff')}"
+                      }
+                    },
+                    {
+                      "name": "FlexRowAuditId",
+                      "value": {
+                        "type": "Expression",
+                        "value": "@{activity('LogExecutionStart').output.firstRow.ExecutionID}"
+                      }
+                    },
+                    {
+                      "name": "FlexRowRecordSource",
+                      "value": {
+                        "type": "Expression",
+                        "value": "@{string('awff')}"
+                      }
+                    }
+                  ],
+                  "formatSettings": {
+                    "type": "DelimitedTextReadSettings"
+                  },
+                  "storeSettings": {
+                    "enablePartitionRootDiscovery": "false",
+                    "recursive": "true",
+                    "type": "AzureBlobFSReadSettings",
+                    "wildcardFileName": {
+                      "type": "Expression",
+                      "value": "@pipeline().parameters.SourceFilePattern"
+                    },
+                    "wildcardFolderPath": {
+                      "type": "Expression",
+                      "value": "@pipeline().parameters.SourceFilePath"
+                    }
+                  },
+                  "type": "DelimitedTextSource"
+                },
+                "translator": {
+                  "mappings": [
+                    {
+                      "sink": {
+                        "name": "ScenarioKey",
+                        "type": "Int32"
+                      },
+                      "source": {
+                        "name": "ScenarioKey",
+                        "type": "Int32"
+                      }
+                    },
+                    {
+                      "sink": {
+                        "name": "ScenarioName",
+                        "type": "String"
+                      },
+                      "source": {
+                        "name": "ScenarioName",
+                        "type": "String"
+                      }
+                    },
+                    {
+                      "sink": {
+                        "name": "ScenarioDate",
+                        "type": "String"
+                      },
+                      "source": {
+                        "name": "ScenarioDate",
+                        "type": "String"
+                      }
+                    },
+                    {
+                      "sink": {
+                        "name": "ScenarioEmpty",
+                        "type": "String"
+                      },
+                      "source": {
+                        "name": "ScenarioEmpty",
+                        "type": "String"
+                      }
+                    },
+                    {
+                      "sink": {
+                        "name": "FlexRowEffectiveFromDate"
+                      },
+                      "source": {
+                        "name": "FlexRowEffectiveFromDate"
+                      }
+                    },
+                    {
+                      "sink": {
+                        "name": "FlexRowAuditId"
+                      },
+                      "source": {
+                        "name": "FlexRowAuditId"
+                      }
+                    },
+                    {
+                      "sink": {
+                        "name": "FlexRowRecordSource"
+                      },
+                      "source": {
+                        "name": "FlexRowRecordSource"
+                      }
+                    }
+                  ],
+                  "type": "TabularTranslator"
+                }
+              }
+            },
+            {
+              "dependsOn": [
+                {
+                  "activity": "COPY_AWLT_01_dbo_Scenario",
+                  "dependencyConditions": [
+                    "Succeeded"
+                  ]
+                }
+              ],
+              "linkedServiceName": {
+                "referenceName": "BimlCatalog",
+                "type": "LinkedServiceReference"
+              },
+              "name": "LogRowcount",
+              "policy": {
+                "retry": 0,
+                "timeout": "0.12:00:00"
+              },
+              "type": "SqlServerStoredProcedure",
+              "typeProperties": {
+                "storedProcedureName": "[adf].[LogRowCount]",
+                "storedProcedureParameters": {
+                  "ComponentName": {
+                    "type": "String",
+                    "value": "COPY_AWLT_01_dbo_Scenario"
+                  },
+                  "CountType": {
+                    "type": "String",
+                    "value": "Copy"
+                  },
+                  "ExecutionID": {
+                    "type": "Int64",
+                    "value": {
+                      "type": "Expression",
+                      "value": "@{activity('LogExecutionStart').output.firstRow.ExecutionID}"
+                    }
+                  },
+                  "ObjectName": {
+                    "type": "String",
+                    "value": "AWLT_FF_AZDLS.dbo.Scenario"
+                  },
+                  "RowCount": {
+                    "type": "String",
+                    "value": {
+                      "type": "Expression",
+                      "value": "@activity('COPY_AWLT_01_dbo_Scenario').output.rowsCopied"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "dependsOn": [
+                {
+                  "activity": "COPY_AWLT_01_dbo_Scenario",
+                  "dependencyConditions": [
+                    "Succeeded"
+                  ]
+                }
+              ],
+              "name": "SetHasRowsCopied",
+              "type": "SetVariable",
+              "typeProperties": {
+                "value": {
+                  "type": "Expression",
+                  "value": "@greater(if(contains(activity('COPY_AWLT_01_dbo_Scenario').output,'rowsCopied'), activity('COPY_AWLT_01_dbo_Scenario').output.rowsCopied, 0), 0)"
+                },
+                "variableName": "HasRowsCopied"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "MainActivity",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ],
+        "linkedServiceName": {
+          "referenceName": "BimlCatalog",
+          "type": "LinkedServiceReference"
+        },
+        "name": "ERR_MainActivity",
+        "policy": {
+          "retry": 0,
+          "timeout": "0.12:00:00"
+        },
+        "type": "SqlServerStoredProcedure",
+        "typeProperties": {
+          "storedProcedureName": "[adf].[LogExecutionError]",
+          "storedProcedureParameters": {
+            "ErrorDescription": {
+              "type": "String",
+              "value": {
+                "type": "Expression",
+                "value": "@string(activity('MainActivity').Error)"
+              }
+            },
+            "ExecutionID": {
+              "type": "Int64",
+              "value": {
+                "type": "Expression",
+                "value": "@{activity('LogExecutionStart').output.firstRow.ExecutionID}"
+              }
+            },
+            "IsBatch": {
+              "type": "Boolean",
+              "value": "false"
+            },
+            "Raiserror": {
+              "type": "Boolean",
+              "value": "true"
+            }
+          }
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "MainActivity",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "name": "MainProcess",
+        "type": "IfCondition",
+        "typeProperties": {
+          "expression": {
+            "type": "Expression",
+            "value": "@variables('HasRowsCopied')"
+          },
+          "ifTrueActivities": [
+            {
+              "linkedServiceName": {
+                "referenceName": "BFX_DBR",
+                "type": "LinkedServiceReference"
+              },
+              "name": "ProcessSourceToStageNotebook",
+              "policy": {
+                "retry": 0,
+                "timeout": "0.12:00:00"
+              },
+              "type": "DatabricksNotebook",
+              "typeProperties": {
+                "baseParameters": {
+                  "_bfx_ods": "bfx-ods",
+                  "_bfx_stg": "bfx-stg",
+                  "location_path": "abfss://bfx-plnd@lakehouse.dfs.core.windows.net",
+                  "row_audit_id": {
+                    "type": "Expression",
+                    "value": "@string(activity('LogExecutionStart').output.firstRow.ExecutionID)"
+                  }
+                },
+                "notebookPath": {
+                  "type": "Expression",
+                  "value": "@concat(pipeline().parameters.NotebookRuntimePath, 'DBR_AWLT_FF_SRC/bfx_awff_Scenario_00_Main')"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "MainProcess",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ],
+        "linkedServiceName": {
+          "referenceName": "BimlCatalog",
+          "type": "LinkedServiceReference"
+        },
+        "name": "ERR_MainProcess",
+        "policy": {
+          "retry": 0,
+          "timeout": "0.12:00:00"
+        },
+        "type": "SqlServerStoredProcedure",
+        "typeProperties": {
+          "storedProcedureName": "[adf].[LogExecutionError]",
+          "storedProcedureParameters": {
+            "ErrorDescription": {
+              "type": "String",
+              "value": {
+                "type": "Expression",
+                "value": "@string(activity('MainProcess').Error)"
+              }
+            },
+            "ExecutionID": {
+              "type": "Int64",
+              "value": {
+                "type": "Expression",
+                "value": "@{activity('LogExecutionStart').output.firstRow.ExecutionID}"
+              }
+            },
+            "IsBatch": {
+              "type": "Boolean",
+              "value": "false"
+            },
+            "Raiserror": {
+              "type": "Boolean",
+              "value": "true"
+            }
+          }
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "MainProcess",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "linkedServiceName": {
+          "referenceName": "BimlCatalog",
+          "type": "LinkedServiceReference"
+        },
+        "name": "LogExecutionEnd",
+        "policy": {
+          "retry": 0,
+          "timeout": "0.12:00:00"
+        },
+        "type": "SqlServerStoredProcedure",
+        "typeProperties": {
+          "storedProcedureName": "[adf].[LogExecutionEnd]",
+          "storedProcedureParameters": {
+            "ExecutionID": {
+              "type": "Int64",
+              "value": {
+                "type": "Expression",
+                "value": "@{activity('LogExecutionStart').output.firstRow.ExecutionID}"
+              }
+            },
+            "IsBatch": {
+              "type": "Boolean",
+              "value": "false"
+            }
+          }
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "MainProcess",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "name": "GetArchiveFilesMetadata",
+        "policy": {
+          "retry": 0,
+          "timeout": "0.12:00:00"
+        },
+        "type": "GetMetadata",
+        "typeProperties": {
+          "dataset": {
+            "parameters": {
+              "DatasetContainer": "bfx-plnd",
+              "DatasetFile": {
+                "type": "Expression",
+                "value": "@string('')"
+              },
+              "DatasetFolder": "source_dbo_Scenario"
+            },
+            "referenceName": "AZDLS_BFX_LND_AZDLS",
+            "type": "DatasetReference"
+          },
+          "fieldList": [
+            "childItems",
+            "exists"
+          ],
+          "storeSettings": {
+            "enablePartitionRootDiscovery": "false",
+            "recursive": "false",
+            "type": "AzureBlobFSReadSettings"
+          }
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "GetArchiveFilesMetadata",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "name": "ForeachArchiveFile",
+        "type": "ForEach",
+        "typeProperties": {
+          "activities": [
+            {
+              "inputs": [
+                {
+                  "parameters": {
+                    "DatasetContainer": "bfx-plnd",
+                    "DatasetFile": {
+                      "type": "Expression",
+                      "value": "@item().Name"
+                    },
+                    "DatasetFolder": "source_dbo_Scenario"
+                  },
+                  "referenceName": "AZDLS_BFX_LND_AZDLS",
+                  "type": "DatasetReference"
+                }
+              ],
+              "name": "CopyFilesToArchive",
+              "outputs": [
+                {
+                  "parameters": {
+                    "DatasetContainer": "archive",
+                    "DatasetFile": {
+                      "type": "Expression",
+                      "value": "@string('')"
+                    },
+                    "DatasetFolder": "source_dbo_Scenario"
+                  },
+                  "referenceName": "AZDLS_BFX_LND_AZDLS",
+                  "type": "DatasetReference"
+                }
+              ],
+              "policy": {
+                "retry": 0,
+                "timeout": "0.12:00:00"
+              },
+              "type": "Copy",
+              "typeProperties": {
+                "sink": {
+                  "formatSettings": {
+                    "type": "ParquetWriteSettings"
+                  },
+                  "storeSettings": {
+                    "type": "AzureBlobFSWriteSettings"
+                  },
+                  "type": "ParquetSink"
+                },
+                "source": {
+                  "storeSettings": {
+                    "enablePartitionRootDiscovery": "false",
+                    "recursive": "false",
+                    "type": "AzureBlobFSReadSettings",
+                    "wildcardFileName": {
+                      "type": "Expression",
+                      "value": "@item().Name"
+                    },
+                    "wildcardFolderPath": "source_dbo_Scenario"
+                  },
+                  "type": "ParquetSource"
+                }
+              }
+            },
+            {
+              "dependsOn": [
+                {
+                  "activity": "CopyFilesToArchive",
+                  "dependencyConditions": [
+                    "Succeeded"
+                  ]
+                }
+              ],
+              "name": "DeleteArchivedFile",
+              "policy": {
+                "retry": 0,
+                "timeout": "0.12:00:00"
+              },
+              "type": "Delete",
+              "typeProperties": {
+                "dataset": {
+                  "parameters": {
+                    "DatasetContainer": "bfx-plnd",
+                    "DatasetFile": {
+                      "type": "Expression",
+                      "value": "@item().Name"
+                    },
+                    "DatasetFolder": "source_dbo_Scenario"
+                  },
+                  "referenceName": "AZDLS_BFX_LND_AZDLS",
+                  "type": "DatasetReference"
+                },
+                "enableLogging": false,
+                "storeSettings": {
+                  "enablePartitionRootDiscovery": "false",
+                  "recursive": "false",
+                  "type": "AzureBlobFSReadSettings",
+                  "wildcardFileName": {
+                    "type": "Expression",
+                    "value": "@item().Name"
+                  }
+                }
+              }
+            }
+          ],
+          "items": {
+            "type": "Expression",
+            "value": "@if(contains(activity('GetArchiveFilesMetadata').output,'childItems'), activity('GetArchiveFilesMetadata').output.childItems, variables('EmptyChildItemArray'))"
+          }
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "MainProcess",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ],
+        "name": "GetErrorFilesMetadata",
+        "policy": {
+          "retry": 0,
+          "timeout": "0.12:00:00"
+        },
+        "type": "GetMetadata",
+        "typeProperties": {
+          "dataset": {
+            "parameters": {
+              "DatasetContainer": "bfx-plnd",
+              "DatasetFile": {
+                "type": "Expression",
+                "value": "@string('')"
+              },
+              "DatasetFolder": "source_dbo_Scenario"
+            },
+            "referenceName": "AZDLS_BFX_LND_AZDLS",
+            "type": "DatasetReference"
+          },
+          "fieldList": [
+            "childItems",
+            "exists"
+          ],
+          "storeSettings": {
+            "enablePartitionRootDiscovery": "false",
+            "recursive": "false",
+            "type": "AzureBlobFSReadSettings"
+          }
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "GetErrorFilesMetadata",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "name": "ForeachErrorFile",
+        "type": "ForEach",
+        "typeProperties": {
+          "activities": [
+            {
+              "inputs": [
+                {
+                  "parameters": {
+                    "DatasetContainer": "bfx-plnd",
+                    "DatasetFile": {
+                      "type": "Expression",
+                      "value": "@item().Name"
+                    },
+                    "DatasetFolder": "source_dbo_Scenario"
+                  },
+                  "referenceName": "AZDLS_BFX_LND_AZDLS",
+                  "type": "DatasetReference"
+                }
+              ],
+              "name": "CopyFilesToError",
+              "outputs": [
+                {
+                  "parameters": {
+                    "DatasetContainer": "error",
+                    "DatasetFile": {
+                      "type": "Expression",
+                      "value": "@string('')"
+                    },
+                    "DatasetFolder": "source_dbo_Scenario"
+                  },
+                  "referenceName": "AZDLS_BFX_LND_AZDLS",
+                  "type": "DatasetReference"
+                }
+              ],
+              "policy": {
+                "retry": 0,
+                "timeout": "0.12:00:00"
+              },
+              "type": "Copy",
+              "typeProperties": {
+                "sink": {
+                  "formatSettings": {
+                    "type": "ParquetWriteSettings"
+                  },
+                  "storeSettings": {
+                    "type": "AzureBlobFSWriteSettings"
+                  },
+                  "type": "ParquetSink"
+                },
+                "source": {
+                  "storeSettings": {
+                    "enablePartitionRootDiscovery": "false",
+                    "recursive": "false",
+                    "type": "AzureBlobFSReadSettings",
+                    "wildcardFileName": {
+                      "type": "Expression",
+                      "value": "@item().Name"
+                    },
+                    "wildcardFolderPath": "source_dbo_Scenario"
+                  },
+                  "type": "ParquetSource"
+                }
+              }
+            },
+            {
+              "dependsOn": [
+                {
+                  "activity": "CopyFilesToError",
+                  "dependencyConditions": [
+                    "Succeeded"
+                  ]
+                }
+              ],
+              "name": "DeleteErrorFile",
+              "policy": {
+                "retry": 0,
+                "timeout": "0.12:00:00"
+              },
+              "type": "Delete",
+              "typeProperties": {
+                "dataset": {
+                  "parameters": {
+                    "DatasetContainer": "bfx-plnd",
+                    "DatasetFile": {
+                      "type": "Expression",
+                      "value": "@item().Name"
+                    },
+                    "DatasetFolder": "source_dbo_Scenario"
+                  },
+                  "referenceName": "AZDLS_BFX_LND_AZDLS",
+                  "type": "DatasetReference"
+                },
+                "enableLogging": false,
+                "storeSettings": {
+                  "enablePartitionRootDiscovery": "false",
+                  "recursive": "false",
+                  "type": "AzureBlobFSReadSettings",
+                  "wildcardFileName": {
+                    "type": "Expression",
+                    "value": "@item().Name"
+                  }
+                }
+              }
+            }
+          ],
+          "items": {
+            "type": "Expression",
+            "value": "@if(contains(activity('GetErrorFilesMetadata').output,'childItems'), activity('GetErrorFilesMetadata').output.childItems, variables('EmptyChildItemArray'))"
+          }
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "MainProcess",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "name": "GetArchiveSourceFilesMetadata",
+        "policy": {
+          "retry": 0,
+          "timeout": "0.12:00:00"
+        },
+        "type": "GetMetadata",
+        "typeProperties": {
+          "dataset": {
+            "parameters": {
+              "DatasetContainer": "source",
+              "DatasetFile": {
+                "type": "Expression",
+                "value": "@string('')"
+              },
+              "DatasetFolder": "source_dbo_Scenario"
+            },
+            "referenceName": "AZDLS_AwltFfAzdlsScenario",
+            "type": "DatasetReference"
+          },
+          "fieldList": [
+            "childItems",
+            "exists"
+          ],
+          "storeSettings": {
+            "enablePartitionRootDiscovery": "false",
+            "recursive": "false",
+            "type": "AzureBlobFSReadSettings"
+          }
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "GetArchiveSourceFilesMetadata",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "name": "ForeachArchiveSourceFile",
+        "type": "ForEach",
+        "typeProperties": {
+          "activities": [
+            {
+              "inputs": [
+                {
+                  "parameters": {
+                    "DatasetContainer": "source",
+                    "DatasetFile": {
+                      "type": "Expression",
+                      "value": "@item().Name"
+                    },
+                    "DatasetFolder": "source_dbo_Scenario"
+                  },
+                  "referenceName": "AZDLS_AwltFfAzdlsScenario",
+                  "type": "DatasetReference"
+                }
+              ],
+              "name": "CopySourceFilesToArchive",
+              "outputs": [
+                {
+                  "parameters": {
+                    "DatasetContainer": "archive",
+                    "DatasetFile": {
+                      "type": "Expression",
+                      "value": "@string('')"
+                    },
+                    "DatasetFolder": "source_dbo_Scenario"
+                  },
+                  "referenceName": "AZDLS_BFX_LND_AZDLS",
+                  "type": "DatasetReference"
+                }
+              ],
+              "policy": {
+                "retry": 0,
+                "timeout": "0.12:00:00"
+              },
+              "type": "Copy",
+              "typeProperties": {
+                "sink": {
+                  "formatSettings": {
+                    "type": "DelimitedTextWriteSettings"
+                  },
+                  "storeSettings": {
+                    "type": "AzureBlobFSWriteSettings"
+                  },
+                  "type": "DelimitedTextSink"
+                },
+                "source": {
+                  "formatSettings": {
+                    "type": "DelimitedTextReadSettings"
+                  },
+                  "storeSettings": {
+                    "enablePartitionRootDiscovery": "false",
+                    "recursive": "false",
+                    "type": "AzureBlobFSReadSettings",
+                    "wildcardFileName": {
+                      "type": "Expression",
+                      "value": "@item().Name"
+                    },
+                    "wildcardFolderPath": "source_dbo_Scenario"
+                  },
+                  "type": "DelimitedTextSource"
+                }
+              }
+            },
+            {
+              "dependsOn": [
+                {
+                  "activity": "CopySourceFilesToArchive",
+                  "dependencyConditions": [
+                    "Succeeded"
+                  ]
+                }
+              ],
+              "name": "DeleteArchivedSourceFile",
+              "policy": {
+                "retry": 0,
+                "timeout": "0.12:00:00"
+              },
+              "type": "Delete",
+              "typeProperties": {
+                "dataset": {
+                  "parameters": {
+                    "DatasetContainer": "source",
+                    "DatasetFile": {
+                      "type": "Expression",
+                      "value": "@item().Name"
+                    },
+                    "DatasetFolder": "source_dbo_Scenario"
+                  },
+                  "referenceName": "AZDLS_AwltFfAzdlsScenario",
+                  "type": "DatasetReference"
+                },
+                "enableLogging": false,
+                "storeSettings": {
+                  "enablePartitionRootDiscovery": "false",
+                  "recursive": "false",
+                  "type": "AzureBlobFSReadSettings",
+                  "wildcardFileName": {
+                    "type": "Expression",
+                    "value": "@item().Name"
+                  }
+                }
+              }
+            }
+          ],
+          "items": {
+            "type": "Expression",
+            "value": "@if(contains(activity('GetArchiveSourceFilesMetadata').output,'childItems'), activity('GetArchiveSourceFilesMetadata').output.childItems, variables('EmptyChildItemArray'))"
+          }
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "MainProcess",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ],
+        "name": "GetErrorSourceFilesMetadata",
+        "policy": {
+          "retry": 0,
+          "timeout": "0.12:00:00"
+        },
+        "type": "GetMetadata",
+        "typeProperties": {
+          "dataset": {
+            "parameters": {
+              "DatasetContainer": "source",
+              "DatasetFile": {
+                "type": "Expression",
+                "value": "@string('')"
+              },
+              "DatasetFolder": "source_dbo_Scenario"
+            },
+            "referenceName": "AZDLS_AwltFfAzdlsScenario",
+            "type": "DatasetReference"
+          },
+          "fieldList": [
+            "childItems",
+            "exists"
+          ],
+          "storeSettings": {
+            "enablePartitionRootDiscovery": "false",
+            "recursive": "false",
+            "type": "AzureBlobFSReadSettings"
+          }
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "GetErrorSourceFilesMetadata",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "name": "ForeachErrorSourceFile",
+        "type": "ForEach",
+        "typeProperties": {
+          "activities": [
+            {
+              "inputs": [
+                {
+                  "parameters": {
+                    "DatasetContainer": "source",
+                    "DatasetFile": {
+                      "type": "Expression",
+                      "value": "@item().Name"
+                    },
+                    "DatasetFolder": "source_dbo_Scenario"
+                  },
+                  "referenceName": "AZDLS_AwltFfAzdlsScenario",
+                  "type": "DatasetReference"
+                }
+              ],
+              "name": "CopySourceFilesToError",
+              "outputs": [
+                {
+                  "parameters": {
+                    "DatasetContainer": "error",
+                    "DatasetFile": {
+                      "type": "Expression",
+                      "value": "@string('')"
+                    },
+                    "DatasetFolder": "source_dbo_Scenario"
+                  },
+                  "referenceName": "AZDLS_BFX_LND_AZDLS",
+                  "type": "DatasetReference"
+                }
+              ],
+              "policy": {
+                "retry": 0,
+                "timeout": "0.12:00:00"
+              },
+              "type": "Copy",
+              "typeProperties": {
+                "sink": {
+                  "formatSettings": {
+                    "type": "DelimitedTextWriteSettings"
+                  },
+                  "storeSettings": {
+                    "type": "AzureBlobFSWriteSettings"
+                  },
+                  "type": "DelimitedTextSink"
+                },
+                "source": {
+                  "formatSettings": {
+                    "type": "DelimitedTextReadSettings"
+                  },
+                  "storeSettings": {
+                    "enablePartitionRootDiscovery": "false",
+                    "recursive": "false",
+                    "type": "AzureBlobFSReadSettings",
+                    "wildcardFileName": {
+                      "type": "Expression",
+                      "value": "@item().Name"
+                    },
+                    "wildcardFolderPath": "source_dbo_Scenario"
+                  },
+                  "type": "DelimitedTextSource"
+                }
+              }
+            },
+            {
+              "dependsOn": [
+                {
+                  "activity": "CopySourceFilesToError",
+                  "dependencyConditions": [
+                    "Succeeded"
+                  ]
+                }
+              ],
+              "name": "DeleteErrorSourceFile",
+              "policy": {
+                "retry": 0,
+                "timeout": "0.12:00:00"
+              },
+              "type": "Delete",
+              "typeProperties": {
+                "dataset": {
+                  "parameters": {
+                    "DatasetContainer": "source",
+                    "DatasetFile": {
+                      "type": "Expression",
+                      "value": "@item().Name"
+                    },
+                    "DatasetFolder": "source_dbo_Scenario"
+                  },
+                  "referenceName": "AZDLS_AwltFfAzdlsScenario",
+                  "type": "DatasetReference"
+                },
+                "enableLogging": false,
+                "storeSettings": {
+                  "enablePartitionRootDiscovery": "false",
+                  "recursive": "false",
+                  "type": "AzureBlobFSReadSettings",
+                  "wildcardFileName": {
+                    "type": "Expression",
+                    "value": "@item().Name"
+                  }
+                }
+              }
+            }
+          ],
+          "items": {
+            "type": "Expression",
+            "value": "@if(contains(activity('GetErrorSourceFilesMetadata').output,'childItems'), activity('GetErrorSourceFilesMetadata').output.childItems, variables('EmptyChildItemArray'))"
+          }
+        }
+      }
+    ],
+    "folder": {
+      "name": "DBR_AWLT_FF_SRC/Copy"
+    },
+    "parameters": {
+      "AzureArchiveContainer": {
+        "defaultValue": "archive",
+        "type": "String"
+      },
+      "AzureErrorContainer": {
+        "defaultValue": "error",
+        "type": "String"
+      },
+      "AzureStageContainer": {
+        "defaultValue": "staging",
+        "type": "String"
+      },
+      "AzureStorageAccount": {
+        "defaultValue": "bimlflex",
+        "type": "String"
+      },
+      "AzureStorageSasToken": {
+        "type": "String"
+      },
+      "BatchExecutionID": {
+        "defaultValue": "-1",
+        "type": "String"
+      },
+      "BatchStartTime": {
+        "defaultValue": "1900-01-01",
+        "type": "String"
+      },
+      "IsInitialLoad": {
+        "defaultValue": "false",
+        "type": "Bool"
+      },
+      "NotebookRuntimePath": {
+        "defaultValue": "/Repos/BimlFlex/DEMO/Databricks/",
+        "type": "String"
+      },
+      "RecordSource": {
+        "defaultValue": "awff",
+        "type": "String"
+      },
+      "SourceCatalogName": {
+        "defaultValue": "source",
+        "type": "String"
+      },
+      "SourceFilePath": {
+        "defaultValue": "Scenario",
+        "type": "String"
+      },
+      "SourceFilePattern": {
+        "defaultValue": "Scenario*.csv",
+        "type": "String"
+      },
+      "SourceObjectName": {
+        "defaultValue": "Scenario",
+        "type": "String"
+      },
+      "SourceSchemaName": {
+        "defaultValue": "awff",
+        "type": "String"
+      },
+      "SourceScopedName": {
+        "defaultValue": "source_dbo_Scenario",
+        "type": "String"
+      },
+      "TargetObjectName": {
+        "defaultValue": "Scenario",
+        "type": "String"
+      },
+      "TargetSchemaName": {
+        "defaultValue": "awff",
+        "type": "String"
+      }
+    },
+    "variables": {
+      "EmptyChildItemArray": {
+        "type": "Array"
+      },
+      "HasRowsCopied": {
+        "type": "Boolean"
+      }
+    }
+  }
+}

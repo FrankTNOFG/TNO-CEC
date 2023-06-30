@@ -1,0 +1,37 @@
+{
+  "name": "AZDLS_AwltFfAzdlsDepartmentGroup",
+  "properties": {
+    "folder": {
+      "name": "SRC/AWLT_FF_AZDLS"
+    },
+    "linkedServiceName": {
+      "referenceName": "AWLT_FF_AZDLS",
+      "type": "LinkedServiceReference"
+    },
+    "schema": [
+      {
+        "name": "DepartmentGroupKey",
+        "type": "Int32"
+      },
+      {
+        "name": "ParentDepartmentGroupKey",
+        "type": "Int32"
+      },
+      {
+        "name": "DepartmentGroupName",
+        "type": "String"
+      }
+    ],
+    "type": "DelimitedText",
+    "typeProperties": {
+      "columnDelimiter": ",",
+      "encodingName": "WINDOWS-1252",
+      "firstRowAsHeader": true,
+      "location": {
+        "fileSystem": "source",
+        "folderPath": "DepartmentGroup",
+        "type": "AzureBlobFSLocation"
+      }
+    }
+  }
+}

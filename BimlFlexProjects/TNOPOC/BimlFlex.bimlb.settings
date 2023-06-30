@@ -1,0 +1,87 @@
+[
+    {
+        "Namespace": "",
+        "Name": "CustomerUID",
+        "Value": "e85b5d06-4d0c-4928-98b4-2a3efac51ec9"
+    },
+    {
+        "Namespace": "",
+        "Name": "Server",
+        "Value": "tcp:bfx-dbr-dv-lakehouse-tno-bicc-sql.database.windows.net"
+    },
+    {
+        "Namespace": "",
+        "Name": "Database",
+        "Value": "BimlFlex"
+    },
+    {
+        "Namespace": "",
+        "Name": "Version",
+        "Value": "Version 1"
+    },
+    {
+        "Namespace": "",
+        "Name": "Provider",
+        "Value": "SQLNCLI11"
+    },
+    {
+        "Namespace": "",
+        "Name": "Authentication",
+        "Value": "SqlServerAuthentication"
+    },
+    {
+        "Namespace": "",
+        "Name": "UserId",
+        "Value": "bfx-dbr-dv-lakehouse-tno-bicc-admin"
+    },
+    {
+        "Namespace": "",
+        "Name": "Password",
+        "Value": "!Ww@sqlTN0b1cc2023"
+    },
+    {
+        "Namespace": "",
+        "Name": "RememberPassword",
+        "Value": false
+    },
+    {
+        "Namespace": "",
+        "Name": "IsUserConnectionMode",
+        "Value": false
+    },
+    {
+        "Namespace": "",
+        "Name": "IsUserMode",
+        "Value": false
+    },
+    {
+        "Namespace": "",
+        "Name": "IsQuickParse",
+        "Value": false
+    },
+    {
+        "Namespace": "",
+        "Name": "ToggledOffFiles",
+        "Value": ""
+    },
+    {
+        "Namespace": "",
+        "Name": "GenerateScriptOptions_ScriptType",
+        "Value": ""
+    },
+    {
+        "Namespace": "",
+        "Name": "GenerateScriptOptions_IntegrationStages",
+        "Value": ""
+    },
+    {
+        "Namespace": "",
+        "Name": "GenerateScriptOptions_ObjectTypes",
+        "Value": ""
+    },
+    {
+        "Namespace": "",
+        "Name": "GenerateScriptOptions_RecordSource",
+        "Value": ""
+    }
+]

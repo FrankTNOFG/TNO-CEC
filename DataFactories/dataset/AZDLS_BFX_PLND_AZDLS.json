@@ -1,0 +1,50 @@
+{
+  "name": "AZDLS_BFX_PLND_AZDLS",
+  "properties": {
+    "folder": {
+      "name": "BFX_PLND_AZDLS"
+    },
+    "linkedServiceName": {
+      "referenceName": "BFX_PLND_AZDLS",
+      "type": "LinkedServiceReference"
+    },
+    "parameters": {
+      "BatchStartTime": {
+        "defaultValue": "BatchStartTimePlaceholder",
+        "type": "string"
+      },
+      "DatasetContainer": {
+        "defaultValue": "DatasetContainerPlaceholder",
+        "type": "string"
+      },
+      "DatasetFile": {
+        "defaultValue": "DatasetFilePlaceholder",
+        "type": "string"
+      },
+      "DatasetFolder": {
+        "defaultValue": "DatasetFolderPlaceholder",
+        "type": "string"
+      }
+    },
+    "schema": [],
+    "type": "Parquet",
+    "typeProperties": {
+      "compressionCodec": "Snappy",
+      "location": {
+        "fileName": {
+          "type": "Expression",
+          "value": "@dataset().DatasetFile"
+        },
+        "fileSystem": {
+          "type": "Expression",
+          "value": "@dataset().DatasetContainer"
+        },
+        "folderPath": {
+          "type": "Expression",
+          "value": "@dataset().DatasetFolder"
+        },
+        "type": "AzureBlobFSLocation"
+      }
+    }
+  }
+}

@@ -1,0 +1,329 @@
+{
+  "name": "DBR_AWLT_SRC_Batch",
+  "properties": {
+    "activities": [
+      {
+        "name": "LogExecutionStart",
+        "policy": {
+          "retry": 0,
+          "timeout": "0.12:00:00"
+        },
+        "type": "Lookup",
+        "typeProperties": {
+          "dataset": {
+            "referenceName": "BimlCatalog",
+            "type": "DatasetReference"
+          },
+          "source": {
+            "sqlReaderStoredProcedureName": "[adf].[LogExecutionStart]",
+            "storedProcedureParameters": {
+              "ExternalExecutionID": {
+                "type": "String",
+                "value": {
+                  "type": "Expression",
+                  "value": "@pipeline().RunId"
+                }
+              },
+              "IsBatch": {
+                "type": "Boolean",
+                "value": "true"
+              },
+              "PackageName": {
+                "type": "String",
+                "value": "DBR_AWLT_SRC_Batch"
+              },
+              "ProjectName": {
+                "type": "String",
+                "value": "DBR_AWLT_SRC"
+              }
+            },
+            "type": "SqlSource"
+          }
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "LogExecutionStart",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "name": "Batch_SolveOrder_1",
+        "type": "IfCondition",
+        "typeProperties": {
+          "expression": {
+            "type": "Expression",
+            "value": "@or(equals(activity('LogExecutionStart').output.firstRow.ExecutionStatus, 'E'), equals(activity('LogExecutionStart').output.firstRow.ExecutionStatus, 'R'))"
+          },
+          "ifTrueActivities": [
+            {
+              "name": "DBR_AWLT_SRC_Batch_1_0",
+              "type": "ExecutePipeline",
+              "typeProperties": {
+                "parameters": {
+                  "AzureArchiveContainer": {
+                    "type": "Expression",
+                    "value": "@pipeline().parameters.AzureArchiveContainer"
+                  },
+                  "AzureErrorContainer": {
+                    "type": "Expression",
+                    "value": "@pipeline().parameters.AzureErrorContainer"
+                  },
+                  "AzureStageContainer": {
+                    "type": "Expression",
+                    "value": "@pipeline().parameters.AzureStageContainer"
+                  },
+                  "AzureStorageAccount": {
+                    "type": "Expression",
+                    "value": "@pipeline().parameters.AzureStorageAccount"
+                  },
+                  "AzureStorageSasToken": {
+                    "type": "Expression",
+                    "value": "@pipeline().parameters.AzureStorageSasToken"
+                  },
+                  "BatchExecutionID": {
+                    "type": "Expression",
+                    "value": "@{activity('LogExecutionStart').output.firstRow.ExecutionID}"
+                  },
+                  "BatchStartTime": {
+                    "type": "Expression",
+                    "value": "@{activity('LogExecutionStart').output.firstRow.ExecutionStartTime}"
+                  },
+                  "IsInitialLoad": {
+                    "type": "Expression",
+                    "value": "@pipeline().parameters.IsInitialLoad"
+                  },
+                  "NotebookRuntimePath": {
+                    "type": "Expression",
+                    "value": "@pipeline().parameters.NotebookRuntimePath"
+                  }
+                },
+                "pipeline": {
+                  "referenceName": "DBR_AWLT_SRC_Batch_1_0",
+                  "type": "PipelineReference"
+                },
+                "waitOnCompletion": true
+              }
+            }
+          ]
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "Batch_SolveOrder_1",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "name": "Batch_SolveOrder_2",
+        "type": "IfCondition",
+        "typeProperties": {
+          "expression": {
+            "type": "Expression",
+            "value": "@or(equals(activity('LogExecutionStart').output.firstRow.ExecutionStatus, 'E'), equals(activity('LogExecutionStart').output.firstRow.ExecutionStatus, 'R'))"
+          },
+          "ifTrueActivities": [
+            {
+              "name": "DBR_AWLT_SRC_Batch_2_0",
+              "type": "ExecutePipeline",
+              "typeProperties": {
+                "parameters": {
+                  "AzureArchiveContainer": {
+                    "type": "Expression",
+                    "value": "@pipeline().parameters.AzureArchiveContainer"
+                  },
+                  "AzureErrorContainer": {
+                    "type": "Expression",
+                    "value": "@pipeline().parameters.AzureErrorContainer"
+                  },
+                  "AzureStageContainer": {
+                    "type": "Expression",
+                    "value": "@pipeline().parameters.AzureStageContainer"
+                  },
+                  "AzureStorageAccount": {
+                    "type": "Expression",
+                    "value": "@pipeline().parameters.AzureStorageAccount"
+                  },
+                  "AzureStorageSasToken": {
+                    "type": "Expression",
+                    "value": "@pipeline().parameters.AzureStorageSasToken"
+                  },
+                  "BatchExecutionID": {
+                    "type": "Expression",
+                    "value": "@{activity('LogExecutionStart').output.firstRow.ExecutionID}"
+                  },
+                  "BatchStartTime": {
+                    "type": "Expression",
+                    "value": "@{activity('LogExecutionStart').output.firstRow.ExecutionStartTime}"
+                  },
+                  "IsInitialLoad": {
+                    "type": "Expression",
+                    "value": "@pipeline().parameters.IsInitialLoad"
+                  },
+                  "NotebookRuntimePath": {
+                    "type": "Expression",
+                    "value": "@pipeline().parameters.NotebookRuntimePath"
+                  }
+                },
+                "pipeline": {
+                  "referenceName": "DBR_AWLT_SRC_Batch_2_0",
+                  "type": "PipelineReference"
+                },
+                "waitOnCompletion": true
+              }
+            }
+          ]
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "Batch_SolveOrder_2",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "name": "Batch_SolveOrder_3",
+        "type": "IfCondition",
+        "typeProperties": {
+          "expression": {
+            "type": "Expression",
+            "value": "@or(equals(activity('LogExecutionStart').output.firstRow.ExecutionStatus, 'E'), equals(activity('LogExecutionStart').output.firstRow.ExecutionStatus, 'R'))"
+          },
+          "ifTrueActivities": [
+            {
+              "name": "DBR_AWLT_SRC_Batch_3_0",
+              "type": "ExecutePipeline",
+              "typeProperties": {
+                "parameters": {
+                  "AzureArchiveContainer": {
+                    "type": "Expression",
+                    "value": "@pipeline().parameters.AzureArchiveContainer"
+                  },
+                  "AzureErrorContainer": {
+                    "type": "Expression",
+                    "value": "@pipeline().parameters.AzureErrorContainer"
+                  },
+                  "AzureStageContainer": {
+                    "type": "Expression",
+                    "value": "@pipeline().parameters.AzureStageContainer"
+                  },
+                  "AzureStorageAccount": {
+                    "type": "Expression",
+                    "value": "@pipeline().parameters.AzureStorageAccount"
+                  },
+                  "AzureStorageSasToken": {
+                    "type": "Expression",
+                    "value": "@pipeline().parameters.AzureStorageSasToken"
+                  },
+                  "BatchExecutionID": {
+                    "type": "Expression",
+                    "value": "@{activity('LogExecutionStart').output.firstRow.ExecutionID}"
+                  },
+                  "BatchStartTime": {
+                    "type": "Expression",
+                    "value": "@{activity('LogExecutionStart').output.firstRow.ExecutionStartTime}"
+                  },
+                  "IsInitialLoad": {
+                    "type": "Expression",
+                    "value": "@pipeline().parameters.IsInitialLoad"
+                  },
+                  "NotebookRuntimePath": {
+                    "type": "Expression",
+                    "value": "@pipeline().parameters.NotebookRuntimePath"
+                  }
+                },
+                "pipeline": {
+                  "referenceName": "DBR_AWLT_SRC_Batch_3_0",
+                  "type": "PipelineReference"
+                },
+                "waitOnCompletion": true
+              }
+            }
+          ]
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "Batch_SolveOrder_3",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "linkedServiceName": {
+          "referenceName": "BimlCatalog",
+          "type": "LinkedServiceReference"
+        },
+        "name": "LogExecutionEnd",
+        "policy": {
+          "retry": 0,
+          "timeout": "0.12:00:00"
+        },
+        "type": "SqlServerStoredProcedure",
+        "typeProperties": {
+          "storedProcedureName": "[adf].[LogExecutionEnd]",
+          "storedProcedureParameters": {
+            "ExecutionID": {
+              "type": "Int64",
+              "value": {
+                "type": "Expression",
+                "value": "@{activity('LogExecutionStart').output.firstRow.ExecutionID}"
+              }
+            },
+            "IsBatch": {
+              "type": "Boolean",
+              "value": "true"
+            }
+          }
+        }
+      }
+    ],
+    "folder": {
+      "name": "DBR_AWLT_SRC/Batch"
+    },
+    "parameters": {
+      "AzureArchiveContainer": {
+        "defaultValue": "archive",
+        "type": "String"
+      },
+      "AzureErrorContainer": {
+        "defaultValue": "error",
+        "type": "String"
+      },
+      "AzureStageContainer": {
+        "defaultValue": "staging",
+        "type": "String"
+      },
+      "AzureStorageAccount": {
+        "defaultValue": "bimlflex",
+        "type": "String"
+      },
+      "AzureStorageSasToken": {
+        "type": "String"
+      },
+      "BatchExecutionID": {
+        "defaultValue": "-1",
+        "type": "String"
+      },
+      "BatchStartTime": {
+        "defaultValue": "1900-01-01",
+        "type": "String"
+      },
+      "IsInitialLoad": {
+        "defaultValue": "false",
+        "type": "Bool"
+      },
+      "NotebookRuntimePath": {
+        "defaultValue": "/Repos/BimlFlex/DEMO/Databricks/",
+        "type": "String"
+      }
+    }
+  }
+}

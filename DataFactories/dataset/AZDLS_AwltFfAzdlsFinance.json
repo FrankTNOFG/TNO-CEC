@@ -1,0 +1,53 @@
+{
+  "name": "AZDLS_AwltFfAzdlsFinance",
+  "properties": {
+    "folder": {
+      "name": "SRC/AWLT_FF_AZDLS"
+    },
+    "linkedServiceName": {
+      "referenceName": "AWLT_FF_AZDLS",
+      "type": "LinkedServiceReference"
+    },
+    "schema": [
+      {
+        "name": "FinanceKey",
+        "type": "String"
+      },
+      {
+        "name": "Date",
+        "type": "String"
+      },
+      {
+        "name": "OrganizationAlternateKey",
+        "type": "String"
+      },
+      {
+        "name": "DepartmentGroupAlternateKey",
+        "type": "String"
+      },
+      {
+        "name": "ScenarioAlternateKey",
+        "type": "String"
+      },
+      {
+        "name": "AccountCodeAlternateKey",
+        "type": "String"
+      },
+      {
+        "name": "Amount",
+        "type": "String"
+      }
+    ],
+    "type": "DelimitedText",
+    "typeProperties": {
+      "columnDelimiter": ",",
+      "encodingName": "WINDOWS-1252",
+      "firstRowAsHeader": true,
+      "location": {
+        "fileSystem": "source",
+        "folderPath": "Finance",
+        "type": "AzureBlobFSLocation"
+      }
+    }
+  }
+}

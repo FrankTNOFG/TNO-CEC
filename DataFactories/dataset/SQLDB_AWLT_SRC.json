@@ -1,0 +1,34 @@
+{
+  "name": "SQLDB_AWLT_SRC",
+  "properties": {
+    "folder": {
+      "name": "SRC/AWLT_SRC"
+    },
+    "linkedServiceName": {
+      "referenceName": "AWLT_SRC",
+      "type": "LinkedServiceReference"
+    },
+    "parameters": {
+      "TargetObjectName": {
+        "defaultValue": "TargetObjectNamePlaceholder",
+        "type": "string"
+      },
+      "TargetSchemaName": {
+        "defaultValue": "TargetSchemaNamePlaceholder",
+        "type": "string"
+      }
+    },
+    "schema": [],
+    "type": "AzureSqlTable",
+    "typeProperties": {
+      "schema": {
+        "type": "Expression",
+        "value": "@dataset().TargetSchemaName"
+      },
+      "table": {
+        "type": "Expression",
+        "value": "@dataset().TargetObjectName"
+      }
+    }
+  }
+}

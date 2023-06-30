@@ -1,0 +1,33 @@
+{
+  "name": "AZDLS_AwltFfAzdlsProductMapping",
+  "properties": {
+    "folder": {
+      "name": "SRC/AWLT_FF_AZDLS"
+    },
+    "linkedServiceName": {
+      "referenceName": "AWLT_FF_AZDLS",
+      "type": "LinkedServiceReference"
+    },
+    "schema": [
+      {
+        "name": "ProductID",
+        "type": "Int32"
+      },
+      {
+        "name": "ProductCategoryID",
+        "type": "Int32"
+      }
+    ],
+    "type": "DelimitedText",
+    "typeProperties": {
+      "columnDelimiter": ",",
+      "encodingName": "WINDOWS-1252",
+      "firstRowAsHeader": true,
+      "location": {
+        "fileSystem": "source",
+        "folderPath": "ProductMapping",
+        "type": "AzureBlobFSLocation"
+      }
+    }
+  }
+}

@@ -1,0 +1,483 @@
+{
+  "name": "DBR_AWLT_FF_SRC_Batch_1_0",
+  "properties": {
+    "activities": [
+      {
+        "name": "DbAwlFfSr_DepartmentGroup",
+        "type": "ExecutePipeline",
+        "typeProperties": {
+          "parameters": {
+            "AzureArchiveContainer": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureArchiveContainer"
+            },
+            "AzureErrorContainer": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureErrorContainer"
+            },
+            "AzureStageContainer": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureStageContainer"
+            },
+            "AzureStorageAccount": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureStorageAccount"
+            },
+            "AzureStorageSasToken": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureStorageSasToken"
+            },
+            "BatchExecutionID": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.BatchExecutionID"
+            },
+            "BatchStartTime": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.BatchStartTime"
+            },
+            "IsInitialLoad": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.IsInitialLoad"
+            },
+            "NotebookRuntimePath": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.NotebookRuntimePath"
+            },
+            "RecordSource": "awff",
+            "SourceCatalogName": "source",
+            "SourceObjectName": "DepartmentGroup",
+            "SourceSchemaName": "dbo",
+            "SourceScopedName": "source_dbo_DepartmentGroup",
+            "TargetObjectName": "DepartmentGroup",
+            "TargetSchemaName": "awff"
+          },
+          "pipeline": {
+            "referenceName": "COPY_DbAwlFfSr_DepartmentGroup",
+            "type": "PipelineReference"
+          },
+          "waitOnCompletion": true
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "DbAwlFfSr_DepartmentGroup",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ],
+        "linkedServiceName": {
+          "referenceName": "BimlCatalog",
+          "type": "LinkedServiceReference"
+        },
+        "name": "ERR_DbAwlFfSr_DepartmentGroup",
+        "policy": {
+          "retry": 0,
+          "timeout": "0.12:00:00"
+        },
+        "type": "SqlServerStoredProcedure",
+        "typeProperties": {
+          "storedProcedureName": "[adf].[LogExecutionError]",
+          "storedProcedureParameters": {
+            "ErrorDescription": {
+              "type": "String",
+              "value": {
+                "type": "Expression",
+                "value": "@string(activity('DbAwlFfSr_DepartmentGroup').Error)"
+              }
+            },
+            "ExecutionID": {
+              "type": "Int64",
+              "value": {
+                "type": "Expression",
+                "value": "@pipeline().parameters.BatchExecutionID"
+              }
+            },
+            "IsBatch": {
+              "type": "Boolean",
+              "value": "true"
+            },
+            "Raiserror": {
+              "type": "Boolean",
+              "value": "true"
+            }
+          }
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "DbAwlFfSr_DepartmentGroup",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "name": "DbAwlFfSr_Finance",
+        "type": "ExecutePipeline",
+        "typeProperties": {
+          "parameters": {
+            "AzureArchiveContainer": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureArchiveContainer"
+            },
+            "AzureErrorContainer": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureErrorContainer"
+            },
+            "AzureStageContainer": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureStageContainer"
+            },
+            "AzureStorageAccount": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureStorageAccount"
+            },
+            "AzureStorageSasToken": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureStorageSasToken"
+            },
+            "BatchExecutionID": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.BatchExecutionID"
+            },
+            "BatchStartTime": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.BatchStartTime"
+            },
+            "IsInitialLoad": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.IsInitialLoad"
+            },
+            "NotebookRuntimePath": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.NotebookRuntimePath"
+            },
+            "RecordSource": "awff",
+            "SourceCatalogName": "source",
+            "SourceObjectName": "Finance",
+            "SourceSchemaName": "dbo",
+            "SourceScopedName": "source_dbo_Finance",
+            "TargetObjectName": "Finance",
+            "TargetSchemaName": "awff"
+          },
+          "pipeline": {
+            "referenceName": "COPY_DbAwlFfSr_Finance",
+            "type": "PipelineReference"
+          },
+          "waitOnCompletion": true
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "DbAwlFfSr_Finance",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ],
+        "linkedServiceName": {
+          "referenceName": "BimlCatalog",
+          "type": "LinkedServiceReference"
+        },
+        "name": "ERR_DbAwlFfSr_Finance",
+        "policy": {
+          "retry": 0,
+          "timeout": "0.12:00:00"
+        },
+        "type": "SqlServerStoredProcedure",
+        "typeProperties": {
+          "storedProcedureName": "[adf].[LogExecutionError]",
+          "storedProcedureParameters": {
+            "ErrorDescription": {
+              "type": "String",
+              "value": {
+                "type": "Expression",
+                "value": "@string(activity('DbAwlFfSr_Finance').Error)"
+              }
+            },
+            "ExecutionID": {
+              "type": "Int64",
+              "value": {
+                "type": "Expression",
+                "value": "@pipeline().parameters.BatchExecutionID"
+              }
+            },
+            "IsBatch": {
+              "type": "Boolean",
+              "value": "true"
+            },
+            "Raiserror": {
+              "type": "Boolean",
+              "value": "true"
+            }
+          }
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "DbAwlFfSr_Finance",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "name": "DbAwlFfSr_ProductMapping",
+        "type": "ExecutePipeline",
+        "typeProperties": {
+          "parameters": {
+            "AzureArchiveContainer": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureArchiveContainer"
+            },
+            "AzureErrorContainer": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureErrorContainer"
+            },
+            "AzureStageContainer": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureStageContainer"
+            },
+            "AzureStorageAccount": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureStorageAccount"
+            },
+            "AzureStorageSasToken": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureStorageSasToken"
+            },
+            "BatchExecutionID": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.BatchExecutionID"
+            },
+            "BatchStartTime": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.BatchStartTime"
+            },
+            "IsInitialLoad": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.IsInitialLoad"
+            },
+            "NotebookRuntimePath": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.NotebookRuntimePath"
+            },
+            "RecordSource": "awff",
+            "SourceCatalogName": "source",
+            "SourceObjectName": "ProductMapping",
+            "SourceSchemaName": "dbo",
+            "SourceScopedName": "source_dbo_ProductMapping",
+            "TargetObjectName": "ProductMapping",
+            "TargetSchemaName": "awff"
+          },
+          "pipeline": {
+            "referenceName": "COPY_DbAwlFfSr_ProductMapping",
+            "type": "PipelineReference"
+          },
+          "waitOnCompletion": true
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "DbAwlFfSr_ProductMapping",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ],
+        "linkedServiceName": {
+          "referenceName": "BimlCatalog",
+          "type": "LinkedServiceReference"
+        },
+        "name": "ERR_DbAwlFfSr_ProductMapping",
+        "policy": {
+          "retry": 0,
+          "timeout": "0.12:00:00"
+        },
+        "type": "SqlServerStoredProcedure",
+        "typeProperties": {
+          "storedProcedureName": "[adf].[LogExecutionError]",
+          "storedProcedureParameters": {
+            "ErrorDescription": {
+              "type": "String",
+              "value": {
+                "type": "Expression",
+                "value": "@string(activity('DbAwlFfSr_ProductMapping').Error)"
+              }
+            },
+            "ExecutionID": {
+              "type": "Int64",
+              "value": {
+                "type": "Expression",
+                "value": "@pipeline().parameters.BatchExecutionID"
+              }
+            },
+            "IsBatch": {
+              "type": "Boolean",
+              "value": "true"
+            },
+            "Raiserror": {
+              "type": "Boolean",
+              "value": "true"
+            }
+          }
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "DbAwlFfSr_ProductMapping",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "name": "DbAwlFfSr_Scenario",
+        "type": "ExecutePipeline",
+        "typeProperties": {
+          "parameters": {
+            "AzureArchiveContainer": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureArchiveContainer"
+            },
+            "AzureErrorContainer": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureErrorContainer"
+            },
+            "AzureStageContainer": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureStageContainer"
+            },
+            "AzureStorageAccount": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureStorageAccount"
+            },
+            "AzureStorageSasToken": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureStorageSasToken"
+            },
+            "BatchExecutionID": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.BatchExecutionID"
+            },
+            "BatchStartTime": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.BatchStartTime"
+            },
+            "IsInitialLoad": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.IsInitialLoad"
+            },
+            "NotebookRuntimePath": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.NotebookRuntimePath"
+            },
+            "RecordSource": "awff",
+            "SourceCatalogName": "source",
+            "SourceObjectName": "Scenario",
+            "SourceSchemaName": "dbo",
+            "SourceScopedName": "source_dbo_Scenario",
+            "TargetObjectName": "Scenario",
+            "TargetSchemaName": "awff"
+          },
+          "pipeline": {
+            "referenceName": "COPY_DbAwlFfSr_Scenario",
+            "type": "PipelineReference"
+          },
+          "waitOnCompletion": true
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "DbAwlFfSr_Scenario",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ],
+        "linkedServiceName": {
+          "referenceName": "BimlCatalog",
+          "type": "LinkedServiceReference"
+        },
+        "name": "ERR_DbAwlFfSr_Scenario",
+        "policy": {
+          "retry": 0,
+          "timeout": "0.12:00:00"
+        },
+        "type": "SqlServerStoredProcedure",
+        "typeProperties": {
+          "storedProcedureName": "[adf].[LogExecutionError]",
+          "storedProcedureParameters": {
+            "ErrorDescription": {
+              "type": "String",
+              "value": {
+                "type": "Expression",
+                "value": "@string(activity('DbAwlFfSr_Scenario').Error)"
+              }
+            },
+            "ExecutionID": {
+              "type": "Int64",
+              "value": {
+                "type": "Expression",
+                "value": "@pipeline().parameters.BatchExecutionID"
+              }
+            },
+            "IsBatch": {
+              "type": "Boolean",
+              "value": "true"
+            },
+            "Raiserror": {
+              "type": "Boolean",
+              "value": "true"
+            }
+          }
+        }
+      }
+    ],
+    "folder": {
+      "name": "DBR_AWLT_FF_SRC/Batch/SubBatch"
+    },
+    "parameters": {
+      "AzureArchiveContainer": {
+        "defaultValue": "archive",
+        "type": "String"
+      },
+      "AzureErrorContainer": {
+        "defaultValue": "error",
+        "type": "String"
+      },
+      "AzureStageContainer": {
+        "defaultValue": "staging",
+        "type": "String"
+      },
+      "AzureStorageAccount": {
+        "defaultValue": "bimlflex",
+        "type": "String"
+      },
+      "AzureStorageSasToken": {
+        "type": "String"
+      },
+      "BatchExecutionID": {
+        "defaultValue": "-1",
+        "type": "String"
+      },
+      "BatchStartTime": {
+        "defaultValue": "1900-01-01",
+        "type": "String"
+      },
+      "IsInitialLoad": {
+        "defaultValue": "false",
+        "type": "Bool"
+      },
+      "NotebookRuntimePath": {
+        "defaultValue": "/Repos/BimlFlex/DEMO/Databricks/",
+        "type": "String"
+      }
+    }
+  }
+}

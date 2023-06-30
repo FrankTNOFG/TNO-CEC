@@ -1,0 +1,150 @@
+{
+  "name": "DBR_AWLT_FF_SRC_Batch_2_0",
+  "properties": {
+    "activities": [
+      {
+        "name": "DbAwlFfSr_Account",
+        "type": "ExecutePipeline",
+        "typeProperties": {
+          "parameters": {
+            "AzureArchiveContainer": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureArchiveContainer"
+            },
+            "AzureErrorContainer": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureErrorContainer"
+            },
+            "AzureStageContainer": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureStageContainer"
+            },
+            "AzureStorageAccount": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureStorageAccount"
+            },
+            "AzureStorageSasToken": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureStorageSasToken"
+            },
+            "BatchExecutionID": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.BatchExecutionID"
+            },
+            "BatchStartTime": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.BatchStartTime"
+            },
+            "IsInitialLoad": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.IsInitialLoad"
+            },
+            "NotebookRuntimePath": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.NotebookRuntimePath"
+            },
+            "RecordSource": "awff",
+            "SourceCatalogName": "source",
+            "SourceObjectName": "Account",
+            "SourceSchemaName": "dbo",
+            "SourceScopedName": "source_dbo_Account",
+            "TargetObjectName": "Account",
+            "TargetSchemaName": "awff"
+          },
+          "pipeline": {
+            "referenceName": "COPY_DbAwlFfSr_Account",
+            "type": "PipelineReference"
+          },
+          "waitOnCompletion": true
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "DbAwlFfSr_Account",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ],
+        "linkedServiceName": {
+          "referenceName": "BimlCatalog",
+          "type": "LinkedServiceReference"
+        },
+        "name": "ERR_DbAwlFfSr_Account",
+        "policy": {
+          "retry": 0,
+          "timeout": "0.12:00:00"
+        },
+        "type": "SqlServerStoredProcedure",
+        "typeProperties": {
+          "storedProcedureName": "[adf].[LogExecutionError]",
+          "storedProcedureParameters": {
+            "ErrorDescription": {
+              "type": "String",
+              "value": {
+                "type": "Expression",
+                "value": "@string(activity('DbAwlFfSr_Account').Error)"
+              }
+            },
+            "ExecutionID": {
+              "type": "Int64",
+              "value": {
+                "type": "Expression",
+                "value": "@pipeline().parameters.BatchExecutionID"
+              }
+            },
+            "IsBatch": {
+              "type": "Boolean",
+              "value": "true"
+            },
+            "Raiserror": {
+              "type": "Boolean",
+              "value": "true"
+            }
+          }
+        }
+      }
+    ],
+    "folder": {
+      "name": "DBR_AWLT_FF_SRC/Batch/SubBatch"
+    },
+    "parameters": {
+      "AzureArchiveContainer": {
+        "defaultValue": "archive",
+        "type": "String"
+      },
+      "AzureErrorContainer": {
+        "defaultValue": "error",
+        "type": "String"
+      },
+      "AzureStageContainer": {
+        "defaultValue": "staging",
+        "type": "String"
+      },
+      "AzureStorageAccount": {
+        "defaultValue": "bimlflex",
+        "type": "String"
+      },
+      "AzureStorageSasToken": {
+        "type": "String"
+      },
+      "BatchExecutionID": {
+        "defaultValue": "-1",
+        "type": "String"
+      },
+      "BatchStartTime": {
+        "defaultValue": "1900-01-01",
+        "type": "String"
+      },
+      "IsInitialLoad": {
+        "defaultValue": "false",
+        "type": "Bool"
+      },
+      "NotebookRuntimePath": {
+        "defaultValue": "/Repos/BimlFlex/DEMO/Databricks/",
+        "type": "String"
+      }
+    }
+  }
+}

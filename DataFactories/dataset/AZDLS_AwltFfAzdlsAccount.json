@@ -1,0 +1,58 @@
+{
+  "name": "AZDLS_AwltFfAzdlsAccount",
+  "properties": {
+    "folder": {
+      "name": "SRC/AWLT_FF_AZDLS"
+    },
+    "linkedServiceName": {
+      "referenceName": "AWLT_FF_AZDLS",
+      "type": "LinkedServiceReference"
+    },
+    "schema": [
+      {
+        "name": "AccountCodeAlternateKey",
+        "type": "Int32"
+      },
+      {
+        "name": "ParentAccountCodeAlternateKey",
+        "type": "Int32"
+      },
+      {
+        "name": "AccountDescription",
+        "type": "String"
+      },
+      {
+        "name": "AccountType",
+        "type": "String"
+      },
+      {
+        "name": "Operator",
+        "type": "String"
+      },
+      {
+        "name": "CustomMembers",
+        "type": "String"
+      },
+      {
+        "name": "ValueType",
+        "type": "String"
+      },
+      {
+        "name": "CustomMemberOptions",
+        "type": "String"
+      }
+    ],
+    "type": "DelimitedText",
+    "typeProperties": {
+      "columnDelimiter": ",",
+      "compressionCodec": "Gzip",
+      "encodingName": "WINDOWS-1252",
+      "firstRowAsHeader": true,
+      "location": {
+        "fileSystem": "source",
+        "folderPath": "Account",
+        "type": "AzureBlobFSLocation"
+      }
+    }
+  }
+}

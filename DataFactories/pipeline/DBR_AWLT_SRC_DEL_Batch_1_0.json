@@ -1,0 +1,364 @@
+{
+  "name": "DBR_AWLT_SRC_DEL_Batch_1_0",
+  "properties": {
+    "activities": [
+      {
+        "name": "DbrAwltSrc_CustomerAddress",
+        "type": "ExecutePipeline",
+        "typeProperties": {
+          "parameters": {
+            "AzureArchiveContainer": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureArchiveContainer"
+            },
+            "AzureErrorContainer": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureErrorContainer"
+            },
+            "AzureStageContainer": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureStageContainer"
+            },
+            "AzureStorageAccount": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureStorageAccount"
+            },
+            "AzureStorageSasToken": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureStorageSasToken"
+            },
+            "BatchExecutionID": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.BatchExecutionID"
+            },
+            "BatchStartTime": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.BatchStartTime"
+            },
+            "IsInitialLoad": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.IsInitialLoad"
+            },
+            "NotebookRuntimePath": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.NotebookRuntimePath"
+            },
+            "RecordSource": "awlt",
+            "SourceCatalogName": "AdventureWorksLT2012",
+            "SourceObjectName": "CustomerAddress",
+            "SourceSchemaName": "SalesLT",
+            "SourceScopedName": "AdventureWorksLT2012_SalesLT_CustomerAddress",
+            "TargetObjectName": "land_CustomerAddress_DEL",
+            "TargetSchemaName": "awlt"
+          },
+          "pipeline": {
+            "referenceName": "DEL_DbrAwltSrc_CustomerAddress",
+            "type": "PipelineReference"
+          },
+          "waitOnCompletion": true
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "DbrAwltSrc_CustomerAddress",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ],
+        "linkedServiceName": {
+          "referenceName": "BimlCatalog",
+          "type": "LinkedServiceReference"
+        },
+        "name": "ERR_DbrAwltSrc_CustomerAddress",
+        "policy": {
+          "retry": 0,
+          "timeout": "0.12:00:00"
+        },
+        "type": "SqlServerStoredProcedure",
+        "typeProperties": {
+          "storedProcedureName": "[adf].[LogExecutionError]",
+          "storedProcedureParameters": {
+            "ErrorDescription": {
+              "type": "String",
+              "value": {
+                "type": "Expression",
+                "value": "@string(activity('DbrAwltSrc_CustomerAddress').Error)"
+              }
+            },
+            "ExecutionID": {
+              "type": "Int64",
+              "value": {
+                "type": "Expression",
+                "value": "@pipeline().parameters.BatchExecutionID"
+              }
+            },
+            "IsBatch": {
+              "type": "Boolean",
+              "value": "true"
+            },
+            "Raiserror": {
+              "type": "Boolean",
+              "value": "true"
+            }
+          }
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "DbrAwltSrc_CustomerAddress",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "name": "DbrAwltSrc_SalesOrderDetail",
+        "type": "ExecutePipeline",
+        "typeProperties": {
+          "parameters": {
+            "AzureArchiveContainer": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureArchiveContainer"
+            },
+            "AzureErrorContainer": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureErrorContainer"
+            },
+            "AzureStageContainer": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureStageContainer"
+            },
+            "AzureStorageAccount": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureStorageAccount"
+            },
+            "AzureStorageSasToken": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureStorageSasToken"
+            },
+            "BatchExecutionID": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.BatchExecutionID"
+            },
+            "BatchStartTime": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.BatchStartTime"
+            },
+            "IsInitialLoad": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.IsInitialLoad"
+            },
+            "NotebookRuntimePath": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.NotebookRuntimePath"
+            },
+            "RecordSource": "awlt",
+            "SourceCatalogName": "AdventureWorksLT2012",
+            "SourceObjectName": "SalesOrderDetail",
+            "SourceSchemaName": "SalesLT",
+            "SourceScopedName": "AdventureWorksLT2012_SalesLT_SalesOrderDetail",
+            "TargetObjectName": "land_SalesOrderDetail_DEL",
+            "TargetSchemaName": "awlt"
+          },
+          "pipeline": {
+            "referenceName": "DEL_DbrAwltSrc_SalesOrderDetail",
+            "type": "PipelineReference"
+          },
+          "waitOnCompletion": true
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "DbrAwltSrc_SalesOrderDetail",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ],
+        "linkedServiceName": {
+          "referenceName": "BimlCatalog",
+          "type": "LinkedServiceReference"
+        },
+        "name": "ERR_DbrAwltSrc_SalesOrderDetail",
+        "policy": {
+          "retry": 0,
+          "timeout": "0.12:00:00"
+        },
+        "type": "SqlServerStoredProcedure",
+        "typeProperties": {
+          "storedProcedureName": "[adf].[LogExecutionError]",
+          "storedProcedureParameters": {
+            "ErrorDescription": {
+              "type": "String",
+              "value": {
+                "type": "Expression",
+                "value": "@string(activity('DbrAwltSrc_SalesOrderDetail').Error)"
+              }
+            },
+            "ExecutionID": {
+              "type": "Int64",
+              "value": {
+                "type": "Expression",
+                "value": "@pipeline().parameters.BatchExecutionID"
+              }
+            },
+            "IsBatch": {
+              "type": "Boolean",
+              "value": "true"
+            },
+            "Raiserror": {
+              "type": "Boolean",
+              "value": "true"
+            }
+          }
+        }
+      },
+      {
+        "name": "DbrAwltSrc_ProductModelProductD1",
+        "type": "ExecutePipeline",
+        "typeProperties": {
+          "parameters": {
+            "AzureArchiveContainer": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureArchiveContainer"
+            },
+            "AzureErrorContainer": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureErrorContainer"
+            },
+            "AzureStageContainer": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureStageContainer"
+            },
+            "AzureStorageAccount": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureStorageAccount"
+            },
+            "AzureStorageSasToken": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.AzureStorageSasToken"
+            },
+            "BatchExecutionID": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.BatchExecutionID"
+            },
+            "BatchStartTime": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.BatchStartTime"
+            },
+            "IsInitialLoad": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.IsInitialLoad"
+            },
+            "NotebookRuntimePath": {
+              "type": "Expression",
+              "value": "@pipeline().parameters.NotebookRuntimePath"
+            },
+            "RecordSource": "awlt",
+            "SourceCatalogName": "AdventureWorksLT2012",
+            "SourceObjectName": "ProductModelProductDescription",
+            "SourceSchemaName": "SalesLT",
+            "SourceScopedName": "AdventureWorksLT2012_SalesLT_ProductModelProductDescription",
+            "TargetObjectName": "land_ProductModelProductDescription_DEL",
+            "TargetSchemaName": "awlt"
+          },
+          "pipeline": {
+            "referenceName": "DEL_DbrAwltSrc_ProductModelProductD1",
+            "type": "PipelineReference"
+          },
+          "waitOnCompletion": true
+        }
+      },
+      {
+        "dependsOn": [
+          {
+            "activity": "DbrAwltSrc_ProductModelProductD1",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ],
+        "linkedServiceName": {
+          "referenceName": "BimlCatalog",
+          "type": "LinkedServiceReference"
+        },
+        "name": "ERR_DbrAwltSrc_ProductModelProductD1",
+        "policy": {
+          "retry": 0,
+          "timeout": "0.12:00:00"
+        },
+        "type": "SqlServerStoredProcedure",
+        "typeProperties": {
+          "storedProcedureName": "[adf].[LogExecutionError]",
+          "storedProcedureParameters": {
+            "ErrorDescription": {
+              "type": "String",
+              "value": {
+                "type": "Expression",
+                "value": "@string(activity('DbrAwltSrc_ProductModelProductD1').Error)"
+              }
+            },
+            "ExecutionID": {
+              "type": "Int64",
+              "value": {
+                "type": "Expression",
+                "value": "@pipeline().parameters.BatchExecutionID"
+              }
+            },
+            "IsBatch": {
+              "type": "Boolean",
+              "value": "true"
+            },
+            "Raiserror": {
+              "type": "Boolean",
+              "value": "true"
+            }
+          }
+        }
+      }
+    ],
+    "folder": {
+      "name": "DBR_AWLT_SRC/Batch Delete/SubBatch"
+    },
+    "parameters": {
+      "AzureArchiveContainer": {
+        "defaultValue": "archive",
+        "type": "String"
+      },
+      "AzureErrorContainer": {
+        "defaultValue": "error",
+        "type": "String"
+      },
+      "AzureStageContainer": {
+        "defaultValue": "staging",
+        "type": "String"
+      },
+      "AzureStorageAccount": {
+        "defaultValue": "bimlflex",
+        "type": "String"
+      },
+      "AzureStorageSasToken": {
+        "type": "String"
+      },
+      "BatchExecutionID": {
+        "defaultValue": "-1",
+        "type": "String"
+      },
+      "BatchStartTime": {
+        "defaultValue": "1900-01-01",
+        "type": "String"
+      },
+      "IsInitialLoad": {
+        "defaultValue": "false",
+        "type": "Bool"
+      },
+      "NotebookRuntimePath": {
+        "defaultValue": "/Repos/BimlFlex/DEMO/Databricks/",
+        "type": "String"
+      }
+    }
+  }
+}

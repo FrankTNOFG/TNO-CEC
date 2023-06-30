@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <IsPackageEditorCompactDisplayModeEnabled>False</IsPackageEditorCompactDisplayModeEnabled>
+    <IsTemplateAutoUpdatePreviewEnabled>True</IsTemplateAutoUpdatePreviewEnabled>
+    <IsTemplateCheckBimlSyntaxEnabled>True</IsTemplateCheckBimlSyntaxEnabled>
+    <IsTemplateAutoFormatXmlEnabled>True</IsTemplateAutoFormatXmlEnabled>
+    <IsBuildDocumentationEnabled>False</IsBuildDocumentationEnabled>
+    <DebugBundles />
+    <AddedXmlFilesPath>addedBiml</AddedXmlFilesPath>
+    <CompilationOutputPath>output</CompilationOutputPath>
+    <DocumentationOutputPath>documentation</DocumentationOutputPath>
+    <IsWarnAsErrorEnabled>False</IsWarnAsErrorEnabled>
+    <WarningLevel>4</WarningLevel>
+    <IsCleanOutputFolderEnabled>True</IsCleanOutputFolderEnabled>
+    <IsCleanDocumentationFolderEnabled>False</IsCleanDocumentationFolderEnabled>
+    <AdfBuildMode>ArmTemplate, MultipleJsonFiles</AdfBuildMode>
+    <DdlBuildMode>None</DdlBuildMode>
+    <SqlVersion>SqlServer2019</SqlVersion>
+    <SsasVersion>Ssas2019</SsasVersion>
+    <SsasTabularVersion>SsasTabular2019</SsasTabularVersion>
+    <SsisVersion>Ssis2019</SsisVersion>
+    <UseProjectDeploymentModel>True</UseProjectDeploymentModel>
+    <ExtraCommandLineOptions />
+    <ExtraBimlcCommandLineOptions />
+    <IsAutoUpdateDocumentationPreviewEnabled>True</IsAutoUpdateDocumentationPreviewEnabled>
+    <EmitDocumentationAnnotations>True</EmitDocumentationAnnotations>
+    <EmitCodeCommentAnnotations>False</EmitCodeCommentAnnotations>
+    <EmitTagAnnotations>False</EmitTagAnnotations>
+    <EmitEmittableAssets>True</EmitEmittableAssets>
+    <EmitIncludeAssets>True</EmitIncludeAssets>
+    <DefaultConnectionName />
+    <LoweringTemplateConfigurationPath />
+    <SelectedConfigurationFilePath />
+    <SelectedFrameworkFilePath />
+    <SelectedBimlDocSettingsFilePath />
+    <SelectedBimlDocTemplateFilePath />
+    <BimlStudioVersion>23.1.331.0</BimlStudioVersion>
+    <EnableBimlFlex>True</EnableBimlFlex>
+    <IsBackgroundProcessingSuspended>False</IsBackgroundProcessingSuspended>
+  </PropertyGroup>
+  <ItemGroup>
+    <RootFolder Include=" ">
+      <RootFolderId>0</RootFolderId>
+    </RootFolder>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="BimlFlex.xlsx">
+      <RootFolderId>0</RootFolderId>
+    </None>
+    <None Include="TNOPOC.bimlproj">
+      <RootFolderId>0</RootFolderId>
+    </None>
+  </ItemGroup>
+</Project>
