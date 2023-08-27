@@ -680,7 +680,6 @@
                 "baseParameters": {
                   "_bfx_ods": "bfx-ods",
                   "_bfx_stg": "bfx-stg",
-                  "location_path": "abfss://bfx-plnd@lakehouse.dfs.core.windows.net",
                   "row_audit_id": {
                     "type": "Expression",
                     "value": "@string(activity('LogExecutionStart').output.firstRow.ExecutionID)"

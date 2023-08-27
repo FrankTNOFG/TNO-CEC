@@ -1,0 +1,20 @@
+{
+  "name": "kvbfxdbrdvlhtnobicc/add",
+  "properties": {
+    "accessPolicies": [
+      {
+        "objectId": "XXX",
+        "permissions": {
+          "certificates": [],
+          "keys": [],
+          "secrets": [
+            "Get",
+            "List"
+          ]
+        },
+        "tenantId": "XXX"
+      }
+    ]
+  },
+  "type": "Microsoft.KeyVault/vaults/accessPolicies"
+}
